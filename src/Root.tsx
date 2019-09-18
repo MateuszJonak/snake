@@ -1,6 +1,12 @@
 import React from 'react';
-import App from './frames/App';
+import { StoreProvider } from 'easy-peasy';
+import { store } from './store';
+import { Main } from './pages/Main';
 
-const Root: React.FC = () => <App />;
+const Root: React.FC = () => (
+  <StoreProvider store={store}>
+    <Main />
+  </StoreProvider>
+);
 
 export default Root;
