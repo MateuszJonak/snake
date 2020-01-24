@@ -1,4 +1,4 @@
-import { grid, GridModel } from './grid';
+import { game, GameModel } from './game';
 
 export enum DIRECTION {
   RIGHT = 'RIGHT',
@@ -8,9 +8,9 @@ export enum DIRECTION {
 }
 
 export interface StoreModel {
-  grid: GridModel;
+  game: GameModel;
 }
 
 export const model: StoreModel = {
-  grid,
+  game,
 };

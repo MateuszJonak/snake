@@ -1,11 +1,11 @@
 import React from 'react';
 import { StoreProvider } from 'easy-peasy';
 import { store } from './store';
-import { Main } from './pages/Main';
+import { Game } from './pages/Game';
 
 const Root: React.FC = () => (
   <StoreProvider store={store}>
-    <Main />
+    <Game />
   </StoreProvider>
 );
 
