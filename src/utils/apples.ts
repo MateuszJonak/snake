@@ -1,10 +1,9 @@
 import { Position } from '../types';
-import { getRandomPosition } from './positions';
-import * as R from 'ramda';
+import { getRandomPosition, hasPosition } from './positions';
 
 export function createApple(omitPositions: Position[]) {
   let apple = getRandomPosition();
-  while (R.includes(apple, omitPositions)) {
+  while (hasPosition(apple, omitPositions)) {
     apple = getRandomPosition();
   }
   return apple;

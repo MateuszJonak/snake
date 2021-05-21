@@ -1,11 +1,4 @@
-import {
-  interval,
-  of,
-  fromEvent,
-  BehaviorSubject,
-  animationFrameScheduler,
-  combineLatest,
-} from 'rxjs';
+import { interval, fromEvent, BehaviorSubject, combineLatest } from 'rxjs';
 import {
   pluck,
   scan,
@@ -16,21 +9,24 @@ import {
   startWith,
   distinctUntilChanged,
   share,
-  takeWhile,
   skip,
   tap,
 } from 'rxjs/operators';
-import { DIRECTION } from './model';
-import { initialApples, initialSnake } from './model/game';
-import {
-  moveToDirection,
-  isOpposite,
-  isPositionEqual,
-} from '../utils/positions';
+import { moveToDirection, isOpposite, equalPosition } from '../utils/positions';
 import { Position } from '../types';
-import { GRID_HEIGHT, GRID_WIDTH, SNAKE_LENGTH } from '../utils/constants';
-import { createApple } from '../utils/apples';
+import { SNAKE_LENGTH, APPLE_COUNT } from '../utils/constants';
+import { createApple, generateApples } from '../utils/apples';
+import { generateSnake } from '../utils/snake';
 import * as R from 'ramda';
+
+export const initialSnake = generateSnake(SNAKE_LENGTH);
+export const initialApples = generateApples(APPLE_COUNT, initialSnake);
+export enum DIRECTION {
+  RIGHT = 'RIGHT',
+  LEFT = 'LEFT',
+  UP = 'UP',
+  DOWN = 'DOWN',
+}
 
 const keys$ = fromEvent<KeyboardEvent>(document, 'keydown').pipe(pluck('code'));
 const MAP_DIRECTION: Record<string, DIRECTION> = {
@@ -108,7 +104,7 @@ const snake$ = move$.pipe(
 
 const eat = (apples: Position[], snake: Position[]) => {
   const [head] = snake;
-  const eaten = apples.find((a) => isPositionEqual(a, head));
+  const eaten = apples.find((a) => equalPosition(a, head));
   if (eaten) {
     const withoutEaten = R.without([eaten], apples);
     return [...withoutEaten, createApple([...withoutEaten, ...snake])];
@@ -140,22 +136,6 @@ export type Scene = {
   score: number;
 };
 
-const scene$ = combineLatest([snake$, apples$, score$]).pipe<Scene>(
+export const scene$ = combineLatest([snake$, apples$, score$]).pipe<Scene>(
   map(([snake, apples, score]) => ({ snake, apples, score })),
 );
-
-const FPS = 60;
-export const game$ = of('Start Game').pipe(
-  map(() => interval(1000 / FPS, animationFrameScheduler)),
-  switchMap((fps$) => fps$.pipe(withLatestFrom(scene$, (_, scene) => scene))),
-  takeWhile((scene) => !isGameOver(scene)),
-);
-
-const isOverGrid = ({ x, y }: Position) =>
-  x >= GRID_WIDTH || x < 0 || y >= GRID_HEIGHT || y < 0;
-
-const isGameOver = (scene: Scene) => {
-  const { snake } = scene;
-  const [head, ...tail] = snake;
-  return isOverGrid(head) || tail.some((p) => isPositionEqual(p, head));
-};

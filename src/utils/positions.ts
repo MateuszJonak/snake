@@ -53,5 +53,8 @@ export const getRandomPosition = (): Position => ({
   y: getRandomNumber(0, GRID_HEIGHT - 1),
 });
 
-export const isPositionEqual = (p1: Position, p2: Position) =>
+export const equalPosition = (p1: Position, p2: Position) =>
   p1.x === p2.x && p1.y === p2.y;
+
+export const hasPosition = (p: Position, positions: Position[]) =>
+  R.includes(p, positions);

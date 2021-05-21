@@ -1,7 +1,6 @@
 import React from 'react';
-import { StoreProvider } from 'easy-peasy';
 import { css, Global } from '@emotion/react';
-import { store } from './store';
+import { StoreProvider } from './store';
 import { Game } from './pages/Game';
 
 const globalStyles = css`
@@ -22,7 +21,7 @@ const globalStyles = css`
 `;
 
 const Root: React.FC = () => (
-  <StoreProvider store={store}>
+  <StoreProvider>
     <Global styles={globalStyles} />
     <Game />
   </StoreProvider>

@@ -1,8 +1,8 @@
 import React from 'react';
-import * as R from 'ramda';
 import { GRID_WIDTH } from '../utils/constants';
-import { useStoreState } from '../store/hooks';
+import { useStoreState } from '../store';
 import { Tile } from './Tile';
+import { hasPosition, equalPosition } from '../utils/positions';
 
 const tiles = [...Array(GRID_WIDTH)];
 type Props = {
@@ -10,8 +10,7 @@ type Props = {
 };
 
 export const Column: React.FC<Props> = ({ indexColumn }) => {
-  const snake = useStoreState((store) => store.game.snake);
-  const apples = useStoreState((store) => store.game.apples);
+  const { snake, apples } = useStoreState();
 
   if (!snake) {
     return null;
@@ -20,12 +19,13 @@ export const Column: React.FC<Props> = ({ indexColumn }) => {
   return (
     <div>
       {tiles.map((_, indexRow) => {
+        const pos = { x: indexColumn, y: indexRow };
         return (
           <Tile
             key={indexRow}
-            isActive={R.includes({ x: indexColumn, y: indexRow }, snake)}
-            isApple={R.includes({ x: indexColumn, y: indexRow }, apples)}
-            isHead={snake[0].x === indexColumn && snake[0].y === indexRow}
+            isActive={hasPosition(pos, snake)}
+            isApple={hasPosition(pos, apples)}
+            isHead={equalPosition(pos, snake[0])}
           />
         );
       })}
