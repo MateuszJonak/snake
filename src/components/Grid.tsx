@@ -18,8 +18,8 @@ export const Grid: React.FC = () => (
 
 const GridContainer = styled.div<Props>`
   display: flex;
-  max-width: ${props => (props.tileWidth + 2 + 2) * GRID_WIDTH}px;
-  max-height: ${props => (props.tileWidth + 2 + 2) * GRID_HEIGHT}px;
+  max-width: ${(props) => (props.tileWidth + 2 + 2) * GRID_WIDTH}px;
+  max-height: ${(props) => (props.tileWidth + 2 + 2) * GRID_HEIGHT}px;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;

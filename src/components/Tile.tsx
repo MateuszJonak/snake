@@ -10,7 +10,7 @@ export const Tile = styled.div<Props>`
   height: 10px;
   border: 1px solid rgba(0, 0, 0, 0.1);
   margin: 1px;
-  background-color: ${props =>
+  background-color: ${(props) =>
     props.isHead
       ? 'green'
       : props.isActive
