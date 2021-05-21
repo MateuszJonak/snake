@@ -111,7 +111,7 @@ const eat = (apples: Position[], snake: Position[]) => {
   const eaten = apples.find((a) => isPositionEqual(a, head));
   if (eaten) {
     const withoutEaten = R.without([eaten], apples);
-    return [...withoutEaten, createApple(withoutEaten)];
+    return [...withoutEaten, createApple([...withoutEaten, ...snake])];
   }
   return apples;
 };
