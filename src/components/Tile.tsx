@@ -1,4 +1,5 @@
 import styled from '@emotion/styled';
+import { TILE_SIZE } from '../utils/constants';
 
 type Props = {
   isActive: boolean;
@@ -6,16 +7,16 @@ type Props = {
   isApple: boolean;
 };
 export const Tile = styled.div<Props>`
-  width: 10px;
-  height: 10px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  width: ${TILE_SIZE}px;
+  height: ${TILE_SIZE}px;
   margin: 1px;
+  border-radius: 2px;
   background-color: ${(props) =>
     props.isHead
-      ? 'green'
+      ? '#69D2E7'
       : props.isActive
-      ? 'red'
+      ? '#A7DBD8'
       : props.isApple
-      ? 'blue'
+      ? '#F38630'
       : 'transparent'};
 `;
