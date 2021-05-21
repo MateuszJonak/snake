@@ -49,8 +49,8 @@ const getRandomNumber = (minimum: number, maximum: number) => {
 };
 
 export const getRandomPosition = (): Position => ({
-  x: getRandomNumber(0, GRID_WIDTH),
-  y: getRandomNumber(0, GRID_HEIGHT),
+  x: getRandomNumber(0, GRID_WIDTH - 1),
+  y: getRandomNumber(0, GRID_HEIGHT - 1),
 });
 
 export const isPositionEqual = (p1: Position, p2: Position) =>
