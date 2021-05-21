@@ -40,7 +40,7 @@ import { generateSnake } from '../utils/snake';
 import { generateApples } from '../utils/apples';
 import * as R from 'ramda';
 
-const keys$ = fromEvent(document, 'keydown').pipe<string>(pluck('code'));
+const keys$ = fromEvent<KeyboardEvent>(document, 'keydown').pipe(pluck('code'));
 const MAP_DIRECTION: Record<string, DIRECTION> = {
   ArrowUp: DIRECTION.UP,
   ArrowDown: DIRECTION.DOWN,
@@ -57,8 +57,8 @@ const snakeLength$ = length$.pipe(
   share(),
 );
 const direction$ = keys$.pipe(
-  map(key => MAP_DIRECTION[key]),
-  filter(direction => !!direction),
+  map((key) => MAP_DIRECTION[key]),
+  filter((direction) => !!direction),
   startWith(DIRECTION.RIGHT),
   distinctUntilChanged(),
 );
@@ -73,7 +73,7 @@ const gameSpeed$ = new BehaviorSubject(200);
 // }, 3000);
 
 const move$ = gameSpeed$.pipe(
-  switchMap(i =>
+  switchMap((i) =>
     interval(i).pipe(
       withLatestFrom(direction$, (_, direction) => ({
         direction,
@@ -96,7 +96,7 @@ const moveSnake = (
 
   return [
     moveToDirection({ direction: move, pos: head }),
-    ...tail.map<Position>(pos => {
+    ...tail.map<Position>((pos) => {
       const newPosition = { ...lastPosition };
       lastPosition = pos;
       return newPosition;
@@ -116,7 +116,7 @@ const snake$ = move$.pipe(
 
 const eat = (apples: Position[], snake: Position[]) => {
   const [head] = snake;
-  const eaten = apples.find(a => isPositionEqual(a, head));
+  const eaten = apples.find((a) => isPositionEqual(a, head));
   if (eaten) {
     return [...R.without([eaten], apples), ...generateApples(1)];
   }
@@ -153,8 +153,8 @@ const scene$ = combineLatest([snake$, apples$, score$]).pipe<Scene>(
 const FPS = 60;
 export const game$ = of('Start Game').pipe(
   map(() => interval(1000 / FPS, animationFrameScheduler)),
-  switchMap(fps$ => fps$.pipe(withLatestFrom(scene$, (_, scene) => scene))),
-  takeWhile(scene => !isGameOver(scene)),
+  switchMap((fps$) => fps$.pipe(withLatestFrom(scene$, (_, scene) => scene))),
+  takeWhile((scene) => !isGameOver(scene)),
 );
 
 const isOverGrid = ({ x, y }: Position) =>
@@ -163,17 +163,17 @@ const isOverGrid = ({ x, y }: Position) =>
 const isGameOver = (scene: Scene) => {
   const { snake } = scene;
   const [head, ...tail] = snake;
-  return isOverGrid(head) || tail.some(p => isPositionEqual(p, head));
+  return isOverGrid(head) || tail.some((p) => isPositionEqual(p, head));
 };
 
 export const Game: React.FC = () => {
-  const { setSnake, setApples } = useStoreActions(store => ({
+  const { setSnake, setApples } = useStoreActions((store) => ({
     setSnake: store.game.setSnake,
     setApples: store.game.setApples,
   }));
 
   useEffect(() => {
-    const sub = game$.subscribe(scene => {
+    const sub = game$.subscribe((scene) => {
       setSnake(scene.snake);
       setApples(scene.apples);
     });

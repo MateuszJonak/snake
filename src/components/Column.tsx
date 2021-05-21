@@ -10,8 +10,8 @@ type Props = {
 };
 
 export const Column: React.FC<Props> = ({ indexColumn }) => {
-  const snake = useStoreState(store => store.game.snake);
-  const apples = useStoreState(store => store.game.apples);
+  const snake = useStoreState((store) => store.game.snake);
+  const apples = useStoreState((store) => store.game.apples);
 
   if (!snake) {
     return null;

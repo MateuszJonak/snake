@@ -37,10 +37,10 @@ export const isOpossiteForHorizontal = R.compose(
 );
 
 export const isOpposite = (direction: DIRECTION, newDirection: DIRECTION) =>
-  R.either(isOpossiteForVertical, isOpossiteForHorizontal)([
-    direction,
-    newDirection,
-  ]);
+  R.either(
+    isOpossiteForVertical,
+    isOpossiteForHorizontal,
+  )([direction, newDirection]);
 
 const getRandomNumber = (minimum: number, maximum: number) => {
   const min = Math.ceil(minimum);
