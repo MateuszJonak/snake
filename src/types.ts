@@ -4,4 +4,4 @@ export enum DIRECTION {
   UP = 'UP',
   DOWN = 'DOWN',
 }
-export type Position = [number, number];
+export type Position = { x: number; y: number };

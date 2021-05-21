@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { GRID_HEIGHT, GRID_WIDTH } from '../utils/constants';
-import { Row } from './Row';
+import { Column } from './Column';
 
 type Props = {
   tileWidth: number;
@@ -9,9 +9,9 @@ type Props = {
 
 const rows = [...Array(GRID_HEIGHT)];
 export const Grid: React.FC = () => (
-  <GridContainer tileWidth={30}>
+  <GridContainer tileWidth={10}>
     {rows.map((_, index) => (
-      <Row key={index} indexRow={index}></Row>
+      <Column key={index} indexColumn={index}></Column>
     ))}
   </GridContainer>
 );
