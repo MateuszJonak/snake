@@ -9,6 +9,7 @@ const defaultStoreState = {
   snake: initialSnake,
   apples: initialApples,
   score: 0,
+  level: 1,
 };
 const StoreStateContext = createContext<StoreModel>(defaultStoreState);
 

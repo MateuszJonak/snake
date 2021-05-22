@@ -13,7 +13,7 @@ import {
   tap,
 } from 'rxjs/operators';
 import { moveToDirection, isOpposite, equalPosition } from '../utils/positions';
-import { Position } from '../types';
+import { Position, DIRECTION } from '../types';
 import { SNAKE_LENGTH, APPLE_COUNT } from '../utils/constants';
 import { createApple, generateApples } from '../utils/apples';
 import { generateSnake } from '../utils/snake';
@@ -21,12 +21,6 @@ import * as R from 'ramda';
 
 export const initialSnake = generateSnake(SNAKE_LENGTH);
 export const initialApples = generateApples(APPLE_COUNT, initialSnake);
-export enum DIRECTION {
-  RIGHT = 'RIGHT',
-  LEFT = 'LEFT',
-  UP = 'UP',
-  DOWN = 'DOWN',
-}
 
 const keys$ = fromEvent<KeyboardEvent>(document, 'keydown').pipe(pluck('code'));
 const MAP_DIRECTION: Record<string, DIRECTION> = {
@@ -35,10 +29,7 @@ const MAP_DIRECTION: Record<string, DIRECTION> = {
   ArrowLeft: DIRECTION.LEFT,
   ArrowRight: DIRECTION.RIGHT,
 };
-const length$ = new BehaviorSubject<number>(SNAKE_LENGTH);
-
-const nextDirection = (prevDirection: DIRECTION, nextDirection: DIRECTION) =>
-  isOpposite(prevDirection, nextDirection) ? prevDirection : nextDirection;
+const length$ = new BehaviorSubject(SNAKE_LENGTH);
 
 const snakeLength$ = length$.pipe(
   scan((step, snakeLength) => snakeLength + step),
@@ -51,28 +42,35 @@ const direction$ = keys$.pipe(
   distinctUntilChanged(),
 );
 
-const gameSpeed$ = new BehaviorSubject(200);
+const POINTS_PER_APPLE = 1;
+const score$ = snakeLength$.pipe(
+  startWith(0),
+  scan((score, _) => score + POINTS_PER_APPLE),
+);
 
-// TEST for speed up
-// let increment = 1;
-// setInterval(() => {
-//   increment += 1;
-//   gameSpeed$.next(200 / increment);
-// }, 3000);
+const initLevelUpgrade = 3;
 
-const move$ = gameSpeed$.pipe(
-  switchMap((i) =>
-    interval(i).pipe(
-      withLatestFrom(direction$, (_, direction) => ({
-        direction,
-      })),
-      scan(
-        (lastDirection, { direction }): DIRECTION =>
-          nextDirection(lastDirection, direction),
-        DIRECTION.RIGHT,
-      ),
-    ),
-  ),
+const levelUpgrade$ = score$.pipe(
+  scan((upgradeScore, score) => {
+    if (score !== 0 && score % upgradeScore === 0) {
+      return upgradeScore * 2;
+    }
+    return upgradeScore;
+  }, initLevelUpgrade),
+  distinctUntilChanged(),
+);
+
+const level$ = levelUpgrade$.pipe(scan((level) => level + 1, 0));
+
+const defaultSpeed = 200;
+
+const nextDirection = (prevDirection: DIRECTION, nextDirection: DIRECTION) =>
+  isOpposite(prevDirection, nextDirection) ? prevDirection : nextDirection;
+
+const move$ = level$.pipe(
+  switchMap((level) => interval(defaultSpeed - level * 20)),
+  withLatestFrom(direction$, (_, direction) => direction),
+  scan(nextDirection),
 );
 
 const moveSnake = (
@@ -121,21 +119,24 @@ const apples$ = snake$.pipe(
 apples$
   .pipe(
     skip(1),
-    tap(() => length$.next(POINTS_PER_APPLE)),
+    tap(() => {
+      length$.next(POINTS_PER_APPLE);
+    }),
   )
   .subscribe();
 
-const POINTS_PER_APPLE = 1;
-const score$ = snakeLength$.pipe(
-  startWith(0),
-  scan((score, _) => score + POINTS_PER_APPLE),
-);
 export type Scene = {
   snake: Position[];
   apples: Position[];
   score: number;
+  level: number;
 };
 
-export const scene$ = combineLatest([snake$, apples$, score$]).pipe<Scene>(
-  map(([snake, apples, score]) => ({ snake, apples, score })),
+export const scene$ = combineLatest([
+  snake$,
+  apples$,
+  score$,
+  level$,
+]).pipe<Scene>(
+  map(([snake, apples, score, level]) => ({ snake, apples, score, level })),
 );
