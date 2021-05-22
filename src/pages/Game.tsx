@@ -4,13 +4,15 @@ import { Grid } from '../components/Grid';
 import styled from '@emotion/styled';
 
 export const Game: React.FC = () => {
-  const { score } = useStoreState();
+  const { score, level } = useStoreState();
 
   return (
     <Container>
       <Title>Snake</Title>
       <ScoreInfo>
         Score: <strong>{score}</strong>
+        <br />
+        Level: <strong>{level}</strong>
       </ScoreInfo>
       <Grid />
     </Container>
